@@ -19,7 +19,7 @@ To install the required dependencies for `pi-gen` you should run:
 ```bash
 apt-get install coreutils quilt parted qemu-user-static debootstrap zerofree zip \
 dosfstools libarchive-tools libcap2-bin grep rsync xz-utils file git curl bc \
-qemu-utils kpartx gpg
+qemu-utils kpartx gpg pigz
 ```
 
 The file `depends` contains a list of tools needed.  The format of this
@@ -33,6 +33,9 @@ can do so with:
 ```bash
 git clone https://github.com/WLAN-Pi/pi-gen.git
 ```
+
+`--depth 1` can be added afer `git clone` to create a shallow clone, only containing
+the latest revision of the repository. Do not do this on your development machine.
 
 Also, be careful to clone the repository to a base path **NOT** containing spaces.
 This configuration is not supported by debootstrap and will lead to `pi-gen` not
@@ -224,7 +227,22 @@ follows:
 # Troubleshooting
 
 ## `64 Bit Systems`
-Please note there is currently an issue when compiling with a 64 Bit OS. See https://github.com/RPi-Distro/pi-gen/issues/271
+Please note there is currently an issue when compiling with a 64 Bit OS. See
+https://github.com/RPi-Distro/pi-gen/issues/271
+
+A 64 bit image can be generated from the `arm64` branch in this repository. Just
+replace the command from [this section](#getting-started-with-building-your-images)
+by the one below, and follow the rest of the documentation:
+```bash
+git clone --branch arm64 https://github.com/RPI-Distro/pi-gen.git
+```
+
+If you want to generate a 64 bits image from a Raspberry Pi running a 32 bits
+version, you need to add `arm_64bit=1` to your `config.txt` file and reboot your
+machine. This will restart your machine with a 64 bits kernel. This will only
+work from a Raspberry Pi with a 64-bit capable processor (i.e. Raspberry Pi Zero
+2, Raspberry Pi 3 or Raspberry Pi 4).
+
 
 ## `binfmt_misc`
 
@@ -233,20 +251,27 @@ possible to make use of `pi-gen` on an x86_64 system, even though it will be run
 ARM binaries. This requires support from the [`binfmt_misc`](https://en.wikipedia.org/wiki/Binfmt_misc)
 kernel module.
 
-You may see the following error:
+You may see one of the following errors:
 
 ```
 update-binfmts: warning: Couldn't load the binfmt_misc module.
+```
+```
+W: Failure trying to run: chroot "/pi-gen/work/test/stage0/rootfs" /bin/true
+and/or
+chroot: failed to run command '/bin/true': Exec format error
 ```
 
 To resolve this, ensure that the following files are available (install them if necessary):
 
 ```
 /lib/modules/$(uname -r)/kernel/fs/binfmt_misc.ko
-/usr/bin/qemu-arm-static
+/usr/bin/qemu-aarch64-static
 ```
 
 You may also need to load the module by hand - run `modprobe binfmt_misc`.
+
+If you are using WSL to build you may have to enable the service `sudo update-binfmts --enable`
 
 # Contributing
 

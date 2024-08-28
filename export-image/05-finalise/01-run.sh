@@ -6,7 +6,7 @@ INFO_FILE="${STAGE_WORK_DIR}/${IMG_FILENAME}${IMG_SUFFIX}.info"
 sed -i 's/^update_initramfs=.*/update_initramfs=all/' "${ROOTFS_DIR}/etc/initramfs-tools/update-initramfs.conf"
 
 on_chroot << EOF
-update-initramfs -u
+update-initramfs -k all -c
 if [ -x /etc/init.d/fake-hwclock ]; then
 	/etc/init.d/fake-hwclock stop
 fi
@@ -100,11 +100,19 @@ echo "::set-output name=version::${NEW_VERSION}"
 # ./01-run.sh: line 92: $GITHUB_OUTPUT: ambiguous redirect
 # https://github.blog/changelog/2022-10-11-github-actions-deprecating-save-state-and-set-output-commands/
 
+ROOT_DEV="$(awk "\$2 == \"${ROOTFS_DIR}\" {print \$1}" /etc/mtab)"
+
+unmount "${ROOTFS_DIR}"
+zerofree "${ROOT_DEV}"
+
+unmount_image "${IMG_FILE}"
+
 mkdir -p "${DEPLOY_DIR}"
 
 rm -f "${DEPLOY_DIR}/${ARCHIVE_FILENAME}${IMG_SUFFIX}.*"
 rm -f "${DEPLOY_DIR}/${IMG_FILENAME}${IMG_SUFFIX}.img"
 
+<<<<<<< HEAD
 mv "$INFO_FILE" "$DEPLOY_DIR/"
 
 if [ "${USE_QCOW2}" = "0" ] && [ "${NO_PRERUN_QCOW2}" = "0" ]; then
@@ -121,6 +129,8 @@ fi
 
 export EXTRATED_IMAGE_SIZE=$(stat --format="%s" "$IMG_FILE")
 export EXTRATED_IMAGE_SHA256=$(sha256sum "$IMG_FILE")
+=======
+>>>>>>> upstream/arm64
 case "${DEPLOY_COMPRESSION}" in
 zip)
 	pushd "${STAGE_WORK_DIR}" > /dev/null
@@ -141,3 +151,5 @@ none | *)
 	cp "$IMG_FILE" "$DEPLOY_DIR/"
 ;;
 esac
+
+cp "$INFO_FILE" "$DEPLOY_DIR/"

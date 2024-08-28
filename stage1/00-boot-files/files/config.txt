@@ -60,6 +60,9 @@ dtoverlay=disable-wifi
 # Enable OTG on RPi3
 dtoverlay=dwc2,dr_mode=otg
 
+[cm5]
+dtoverlay=dwc2,dr_mode=host
+
 [all]
 # Enable i2c
 dtparam=i2c_arm=on

@@ -47,8 +47,4 @@ sed "${NOOBS_DIR}/os_list.json" -i -e "s|EXTRACTSHA256|${EXTRACTED_IMAGE_SHA256}
 
 sed "${NOOBS_DIR}/release_notes.txt" -i -e "s|UNRELEASED|${IMG_DATE}|"
 
-if [ "${USE_QCOW2}" = "1" ]; then
-	mv "${NOOBS_DIR}" "${DEPLOY_DIR}/"
-else
-	cp -a "${NOOBS_DIR}" "${DEPLOY_DIR}/"
-fi
+cp -a "${NOOBS_DIR}" "${DEPLOY_DIR}/"

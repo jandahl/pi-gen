@@ -9,17 +9,18 @@ most relevant details needed to customize the WLAN Pi OS image.
 
 ## Dependencies
 
-pi-gen runs on Debian-based operating systems. Currently it is only supported on
-either Debian Buster or Ubuntu Xenial and is known to have issues building on
-earlier releases of these systems. On other Linux distributions it may be possible
-to use the Docker build described below.
+pi-gen runs on Debian-based operating systems released after 2017, and we
+always advise you use the latest OS for security reasons.
+
+On other Linux distributions it may be possible to use the Docker build described
+below.
 
 To install the required dependencies for `pi-gen` you should run:
 
 ```bash
 apt-get install coreutils quilt parted qemu-user-static debootstrap zerofree zip \
 dosfstools libarchive-tools libcap2-bin grep rsync xz-utils file git curl bc \
-qemu-utils kpartx gpg pigz
+gpg pigz xxd arch-test
 ```
 
 The file `depends` contains a list of tools needed.  The format of this
@@ -67,17 +68,17 @@ This can help when making local changes that you don't want to merge officially.
 
 The following process is followed to build images:
 
- * Loop through all of the stage directories in alphanumeric order
+ * Interate through all of the stage directories in alphanumeric order
 
- * Move on to the next directory if this stage directory contains a file called
+ * Bypass a stage directory if it contains a file called
    "SKIP"
 
  * Run the script ```prerun.sh``` which is generally just used to copy the build
    directory between stages.
 
- * In each stage directory loop through each subdirectory and then run each of the
-   install scripts it contains, again in alphanumeric order. These need to be named
-   with a two digit padded number at the beginning.
+ * In each stage directory iterate through each subdirectory and then run each of the
+   install scripts it contains, again in alphanumeric order. **These need to be named
+   with a two digit padded number at the beginning.**
    There are a number of different files and directories which can be used to
    control different parts of the build process:
 
@@ -112,7 +113,7 @@ It is recommended to examine build.sh for finer details.
 
 Docker can be used to perform the build inside a container. This partially isolates
 the build from the host system, and allows using the script on non-debian based
-systems (e.g. Fedora Linux). The isolate is not complete due to the need to use
+systems (e.g. Fedora Linux). The isolation is not complete due to the need to use
 some kernel level services for arm emulation (binfmt) and loop devices (losetup).
 
 To build:
@@ -125,7 +126,7 @@ vi config         # Edit your config file. See above.
 If everything goes well, your finished image will be in the `deploy/` folder.
 You can then remove the build container with `docker rm -v pigen_work`
 
-If something breaks along the line, you can edit the corresponding scripts, and
+If you encounter errors during the build, you can edit the corresponding scripts, and
 continue:
 
 ```bash
@@ -164,32 +165,25 @@ maintenance and allows for more easy customization.
    `debootstrap`, which creates a minimal filesystem suitable for use as a
    base.tgz on Debian systems.  This stage also configures apt settings and
    installs `raspberrypi-bootloader` which is missed by debootstrap.  The
-   minimal core is installed but not configured, and the system will not quite
-   boot yet.
+   minimal core is installed but not configured. As a result, this stage will not boot.
 
  - **Stage 1** - truly minimal system.  This stage makes the system bootable by
    installing system files like `/etc/fstab`, configures the bootloader, makes
    the network operable, and installs packages like raspi-config.  At this
    stage the system should boot to a local console from which you have the
    means to perform basic tasks needed to configure and install the system.
-   This is as minimal as a system can possibly get, and its arguably not
-   really usable yet in a traditional sense yet.  Still, if you want minimal,
-   this is minimal and the rest you could reasonably do yourself as sysadmin.
 
- - **Stage 2** - lite system.  This stage produces the Raspbian-Lite image.  It
-   installs some optimized memory functions, sets timezone and charmap
+ - **Stage 2** - lite system.  This stage produces the Raspberry Pi OS Lite image.
+   Stage 2 installs some optimized memory functions, sets timezone and charmap
    defaults, installs fake-hwclock and ntp, wireless LAN and bluetooth support,
    dphys-swapfile, and other basics for managing the hardware.  It also
    creates necessary groups and gives the pi user access to sudo and the
    standard console hardware permission groups.
 
-   There are a few tools that may not make a whole lot of sense here for
-   development purposes on a minimal system such as basic Python and Lua
-   packages as well as the `build-essential` package.  They are lumped right
-   in with more essential packages presently, though they need not be with
-   pi-gen.  These are understandable for Raspbian's target audience, but if
-   you were looking for something between truly minimal and Raspbian-Lite,
-   here's where you start trimming.
+   Note: Raspberry Pi OS Lite contains a number of tools for development,
+   including `Python`, `Lua` and the `build-essential` package. If you are
+   creating an image to deploy in products, be sure to remove extraneous development
+   tools before deployment.
 
  - **Stage wlanpi 0** - base WLAN Pi packages. This stage installs the base
    packages for the WLAN Pi customization. Generating an image here is not

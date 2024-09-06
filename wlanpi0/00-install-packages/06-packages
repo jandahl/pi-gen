@@ -2,12 +2,7 @@
 wlanpi-common
 wlanpi-profiler
 wlanpi-webui
-wlanpi-fpms
 wlanpi-kernel
-wlanpi-bluetooth
-wlanpi-hotspot
-wlanpi-wconsole
-wlanpi-server
 wlanpi-wipry
 wlanpi-misc-firmware
 wlanpi-grafana
@@ -16,12 +11,3 @@ libpcap0.8/bullseye-backports
 wpasupplicant/bullseye-backports
 hostapd/bullseye-backports
 wlanpi-librespeed-cli
-cockpit/bullseye-backports
-cockpit-packagekit
-cockpit-storaged
-
-# In development
-#wlanpi-core
-
-# No longer supported
-#wiperf

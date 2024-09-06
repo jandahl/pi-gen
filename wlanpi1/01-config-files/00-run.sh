@@ -19,11 +19,6 @@ on_chroot <<CHEOF
 		echo "send dhcp-client-identifier = hardware;" >> /etc/dhcp/dhclient.conf
 	fi
 
-	# Setup: TFTP
-	usermod -a -G tftp wlanpi
-	chown -R tftp:tftp /srv/tftp
-	chmod 775 /srv/tftp
-
 	# Configure avahi txt record: id=wlanpi
 	sed -i '/<port>/ a \ \ \ \ <txt-record>id=wlanpi</txt-record>' /etc/avahi/services/ssh.service
 
@@ -67,9 +62,6 @@ CHEOF
 # Set WLAN Pi image version
 copy_overlay /etc/wlanpi-release -o root -g root -m 644
 
-# Setup TFTP
-copy_overlay /etc/default/tftpd-hpa -o root -g root -m 644
-
 # Add our custom sudoers file
 copy_overlay /etc/sudoers.d/wlanpidump -o root -g root -m 440
 
@@ -103,7 +95,7 @@ copy_overlay /etc/systemd/network/usb0.network -o root -g root -m 644
 # Enable kernel modules for USB OTG
 copy_overlay /etc/modules-load.d/rndis.conf -o root -g root -m 644
 
-# Copy USB1 network configuration
+# Copy usb1 network configuration
 copy_overlay /etc/systemd/network/usb1.network -o root -g root -m 664
 
 # Copy eth1 network configuration

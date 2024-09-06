@@ -1,6 +1,6 @@
-# pi-gen
+# pi-gen for WLAN Pi Go
 
-Tool used to create WLAN Pi OS images. Our current GitHub setup automatically
+Tool used to create WLAN Pi Go OS images. Our current GitHub setup automatically
 builds a new image every day, or whenever new code is committed to the `force-build` branch.
 
 To get more information on the complete build process used by pi-gen, please see
